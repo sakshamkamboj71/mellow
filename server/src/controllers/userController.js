@@ -60,8 +60,32 @@ export const loginUser = async (req, res) => {
 
     const token = await jwt.sign({ id: user._id }, process.env.SECRET_KEY);
 
-    return res.status(200).json({ message: "Login successfull", token });
+    return res
+      .status(200)
+      .json({ message: "Login successfull", token, type: user.type });
   } catch (err) {
     return res.status(501).json({ error: "Invalid Access" });
+  }
+};
+
+export const checkTokenValidity = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
+      if (err) {
+        return undefined;
+      } else {
+        return data.id;
+      }
+    });
+
+    if (!decoded) {
+      return res.status(401).json({ error: "Invalid Access", validity: false });
+    }
+
+    return res.status(200).json({ message: "Success", validity: true });
+  } catch (err) {
+    return res.status(400).json({ error: "Not logged in", validity: false });
   }
 };

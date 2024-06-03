@@ -2,6 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
+import { playlistRouter } from "./routes/playlist.js";
 import { songRouter } from "./routes/songs.js";
 import { userRouter } from "./routes/users.js";
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(
 
 app.use("/user-auth", userRouter);
 app.use("/songs", songRouter);
+app.use("/playlists", playlistRouter);
 
 mongoose.connect(process.env.MONGO_URI);
 
