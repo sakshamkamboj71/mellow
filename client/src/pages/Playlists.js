@@ -1,5 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toggleSidebar } from "../services/actions/action";
 
 const Playlists = () => {
   const [playlists, setPlaylists] = useState([]);
@@ -18,16 +21,29 @@ const Playlists = () => {
     setPlaylists(response.data.playlists);
   };
 
+  const dispatch = useDispatch();
+  const myState = useSelector((state) => state.toggleLongSidebar);
+  const image = useSelector((state) => state.getDefaultDisk);
+
+  const navigate = useNavigate();
+
   return (
-    <div className="flex-grow flex flex-wrap enableScroll justify-center">
+    <div className="flex-grow flex flex-wrap justify-center">
+      {myState && (
+        <div
+          onClick={() => dispatch(toggleSidebar())}
+          className="fixed justify-center items-center w-full h-full bg-black md:hidden opacity-60 z-30"
+        ></div>
+      )}
+
       <div className="flex flex-wrap w-11/12 justify-center">
         {/* PLAYLIST CARD */}
-
         {playlists.map((playlist, ind) => {
           return (
             <div
               key={ind}
-              className="w-52 h-64 m-2 flex flex-col select-none cursor-pointer hover:scale-[1.03] duration-150 shadow-xs shadow-white"
+              onClick={() => navigate(`/playlist/${playlist._id}`)}
+              className="w-52 h-64 m-2 flex flex-col select-none cursor-pointer hover:scale-[1.03] duration-150"
             >
               <div className="w-full h-52 rounded-lg bg-[#1f1f1f]">
                 {playlist.image ? (
@@ -38,8 +54,8 @@ const Playlists = () => {
                   />
                 ) : (
                   <img
-                    src="finalLogo.jpg"
-                    alt="Playlist default logo"
+                    src={image.icon}
+                    alt="Loading..."
                     className="w-full h-full object-contain rounded-lg"
                   />
                 )}

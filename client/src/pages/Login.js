@@ -98,7 +98,7 @@ const Login = ({ setType }) => {
             onChange={(e) => setPassword(e.target.value)}
           />
           <div className="flex justify-center p-2">
-            <button className="p-2 px-6 rounded-md bg-[#3A0078] hover:bg-[#5E1ED4]">
+            <button className="p-2 px-6 rounded-md bg-[#894aff] hover:bg-[#5E1ED4]">
               Submit
             </button>
           </div>

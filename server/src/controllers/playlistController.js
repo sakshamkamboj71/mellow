@@ -134,11 +134,36 @@ export const fetchPlaylist = async (req, res) => {
       return res.status(501).json({ error: "Invalid Access" });
     }
 
-    const playlist = await PlaylistModel.findOne({ _id: playlistId }).populate(
-      "songs"
-    );
+    const playlist = await PlaylistModel.findOne({ _id: playlistId })
+      .populate("songs")
+      .populate("songs.artist")
+      .populate("user");
 
     return res.status(200).json({ playlist });
+  } catch (err) {
+    return res.status(501).json({ error: "Invalid Access" });
+  }
+};
+
+export const fetchPlaylistOfUser = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
+      if (err) {
+        return undefined;
+      } else {
+        return data.id;
+      }
+    });
+
+    if (!decoded) {
+      return res.status(501).json({ error: "Invalid Access" });
+    }
+
+    const playlists = await PlaylistModel.find({ user: decoded });
+
+    return res.status(200).json({ playlists });
   } catch (err) {
     return res.status(501).json({ error: "Invalid Access" });
   }
