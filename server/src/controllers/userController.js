@@ -89,3 +89,27 @@ export const checkTokenValidity = async (req, res) => {
     return res.status(400).json({ error: "Not logged in", validity: false });
   }
 };
+
+export const getUserData = async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
+      if (err) {
+        return undefined;
+      } else {
+        return data.id;
+      }
+    });
+
+    if (!decoded) {
+      return res.status(401).json({ error: "Invalid Access" });
+    }
+
+    const user = await UserModel.findById(decoded);
+
+    return res.status(200).json({ user });
+  } catch (err) {
+    return res.status(400).json({ error: "Not logged in" });
+  }
+};

@@ -18,3 +18,16 @@ body {
 .enableScroll {
   overflow: auto;
 }
+
+.slider input {
+  height: 100%;
+  width: 100%;
+  /* --webkit-appearance: none; */
+  outline: none;
+  background: transparent;
+}
+
+.slider input::-moz-range-progress {
+  border-radius: 25px;
+  background: #894aff;
+}

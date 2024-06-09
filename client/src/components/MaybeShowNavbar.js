@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 
-const MaybeShowNavbar = ({ children, validity }) => {
+const MaybeShowNavbar = ({ children }) => {
   const location = useLocation();
 
   const [showNavbar, setShowNavbar] = useState(true);
@@ -9,14 +9,13 @@ const MaybeShowNavbar = ({ children, validity }) => {
   useEffect(() => {
     if (
       location.pathname.startsWith("/login") ||
-      location.pathname.startsWith("/register") ||
-      !validity
+      location.pathname.startsWith("/register")
     ) {
       setShowNavbar(false);
     } else {
       setShowNavbar(true);
     }
-  }, [location, validity]);
+  }, [location]);
   return <div>{showNavbar && children}</div>;
 };
 

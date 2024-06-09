@@ -45,7 +45,7 @@ export const createPlaylist = async (req, res) => {
 
     await newPlaylist.save();
 
-    return res.status(201).json({ message: "Playlist Created", newPlaylist });
+    return res.status(201).json({ message: "Playlist Created" });
   } catch (err) {
     return res.status(501).json({ error: "Invalid Access" });
   }
@@ -164,6 +164,42 @@ export const fetchPlaylistOfUser = async (req, res) => {
     const playlists = await PlaylistModel.find({ user: decoded });
 
     return res.status(200).json({ playlists });
+  } catch (err) {
+    return res.status(501).json({ error: "Invalid Access" });
+  }
+};
+
+export const updatePlaylistName = async (req, res) => {
+  const { token, playlistId, newName } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
+      if (err) {
+        return undefined;
+      } else {
+        return data.id;
+      }
+    });
+
+    if (!decoded) {
+      return res.status(501).json({ error: "Invalid Access" });
+    }
+
+    const playlist = await PlaylistModel.findById(playlistId);
+
+    if (decoded !== playlist.user.toString()) {
+      return res.status(401).json({
+        error: "You can edit only your playlists",
+      });
+    }
+
+    await PlaylistModel.findByIdAndUpdate(
+      playlistId,
+      { name: newName },
+      { new: true }
+    );
+
+    return res.status(200).json({ message: "Playlist Name Updated" });
   } catch (err) {
     return res.status(501).json({ error: "Invalid Access" });
   }

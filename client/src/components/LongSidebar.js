@@ -1,14 +1,18 @@
-import React from "react";
+import React, { useState } from "react";
 import { BiSolidAlbum } from "react-icons/bi";
 import { MdExplore } from "react-icons/md";
 import { PiPlaylistFill } from "react-icons/pi";
 import { useNavigate } from "react-router-dom";
+import NewPlaylist from "./NewPlaylist";
 
 const LongSidebar = ({ userPlaylists }) => {
   const navigate = useNavigate();
+  const [newPlaylist, setNewPlaylist] = useState(false);
 
   return (
     <>
+      {newPlaylist && <NewPlaylist setNewPlaylist={setNewPlaylist} />}
+
       <div className="w-64 h-screen pt-16 bg-[#000000] fixed left-0 p-2 text-xs drop-shadow-xl z-40 hidden md:block overflow-auto">
         <div
           onClick={() => navigate("/")}
@@ -38,7 +42,10 @@ const LongSidebar = ({ userPlaylists }) => {
           <div className="text-lg">Explore</div>
         </div>
 
-        <div className="w-full p-2 flex justify-center items-center text-lg bg-[#894aff] hover:bg-[#5E1ED4] mt-6 mb-2 rounded-md select-none cursor-pointer px-2">
+        <div
+          onClick={() => setNewPlaylist(true)}
+          className="w-full p-2 flex justify-center items-center text-lg bg-[#894aff] hover:bg-[#5E1ED4] mt-6 mb-2 rounded-md select-none cursor-pointer px-2"
+        >
           New Playlist +
         </div>
 
@@ -47,7 +54,7 @@ const LongSidebar = ({ userPlaylists }) => {
             return (
               <div
                 key={ind}
-                className="w-full p-2 text-sm rounded-md hover:bg-[#323232] select-none cursor-pointer"
+                className="w-full p-2 text-sm rounded-xl hover:bg-[#323232] select-none cursor-pointer"
               >
                 {playlist.name}
               </div>
@@ -85,7 +92,10 @@ const LongSidebar = ({ userPlaylists }) => {
           <div className="text-lg">Explore</div>
         </div>
 
-        <div className="w-full p-2 flex justify-center items-center text-lg bg-[#894aff] hover:bg-[#5E1ED4] mt-6 mb-2 rounded-md select-none cursor-pointer px-2">
+        <div
+          onClick={() => setNewPlaylist(true)}
+          className="w-full p-2 flex justify-center items-center text-lg bg-[#894aff] hover:bg-[#5E1ED4] mt-6 mb-2 rounded-md select-none cursor-pointer px-2"
+        >
           New Playlist +
         </div>
 
@@ -94,7 +104,7 @@ const LongSidebar = ({ userPlaylists }) => {
             return (
               <div
                 key={ind}
-                className="w-full p-2 text-sm rounded-md hover:bg-[#323232] select-none cursor-pointer"
+                className="w-full p-2 text-sm rounded-xl hover:bg-[#323232] select-none cursor-pointer"
               >
                 {playlist.name}
               </div>

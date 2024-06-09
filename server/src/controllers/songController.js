@@ -38,7 +38,6 @@ export const addSong = async (req, res) => {
       songFile,
       image,
       duration,
-      likes: 0,
       language,
     });
 
@@ -83,9 +82,8 @@ export const fetchArtistSongs = async (req, res) => {
   }
 };
 
-export const likeSong = async (req, res) => {
-  const { token, songId } = req.body;
-
+export const fetchArtistOwnSongs = async (req, res) => {
+  const { token } = req.body;
   try {
     const decoded = jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
       if (err) {
@@ -99,23 +97,36 @@ export const likeSong = async (req, res) => {
       return res.status(501).json({ error: "Invalid Access" });
     }
 
-    const user = await UserModel.findById({ _id: decoded });
+    const songs = await SongModel.find({ artist: decoded });
 
-    if (user.type !== "user") {
-      return res.status(403).json({ error: "Only a user can like a song" });
+    return res.status(200).json({ songs });
+  } catch (err) {
+    return res.status(501).json({ error: "Invalid Access" });
+  }
+};
+
+export const fetchQuerySongs = async (req, res) => {
+  const { token } = req.body;
+  const { query } = req.params;
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
+      if (err) {
+        return undefined;
+      } else {
+        return data.id;
+      }
+    });
+
+    if (!decoded) {
+      return res.status(401).json({ error: "Invalid Access" });
     }
 
-    const song = await SongModel.findOne({ _id: songId });
+    const songs = await SongModel.find({
+      name: { $regex: query, $options: "i" },
+    });
 
-    const likes = song.likes + 1;
-
-    await SongModel.findByIdAndUpdate(
-      { _id: songId },
-      { likes },
-      { new: true }
-    );
-
-    return res.status(200).json({ message: "Added a like" });
+    return res.status(200).json({ message: "Completed", songs });
   } catch (err) {
     return res.status(501).json({ error: "Invalid Access" });
   }
