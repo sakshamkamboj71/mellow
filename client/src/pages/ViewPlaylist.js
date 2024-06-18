@@ -2,11 +2,21 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { IoMdRefresh } from "react-icons/io";
 import { MdEdit } from "react-icons/md";
+import { RiImageEditFill } from "react-icons/ri";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import AddSong from "../components/AddSong";
-import Loading from "../components/Loading";
-import { changeFolder, changeSong } from "../services/actions/action";
+import EditPlaylistImage from "../components/EditPlaylistImage";
+import EditPlaylistName from "../components/EditPlaylistName";
+import SoftLoading from "../components/SoftLoading";
+
+import {
+  changeFolder,
+  changeSingleSong,
+  changeSong,
+} from "../services/actions/action";
+
+import { FaTrash } from "react-icons/fa";
 
 const ViewPlaylist = () => {
   const params = useParams();
@@ -16,7 +26,9 @@ const ViewPlaylist = () => {
   const [addSong, setAddSong] = useState(false);
   const [currentSongs, setcurrentSongs] = useState([]);
   const [refresh, setRefresh] = useState(false);
-  const [sort, setSort] = useState(false);
+  const [playlistName, setPlaylistName] = useState(false);
+  const [playlistImg, setPlaylistImg] = useState(false);
+  const [deleteSongs, setDeleteSongs] = useState(false);
 
   const fetchPlaylist = async () => {
     const token = window.localStorage.getItem("token");
@@ -42,9 +54,10 @@ const ViewPlaylist = () => {
 
   useEffect(() => {
     fetchPlaylist();
-  }, [refresh]);
+  }, [refresh, params]);
 
   const image = useSelector((state) => state.getDefaultDisk);
+  const userInfo = useSelector((state) => state.userInfo);
   const dispatch = useDispatch();
 
   const secondsToTime = (seconds) => {
@@ -59,6 +72,7 @@ const ViewPlaylist = () => {
 
   const songInfo = useSelector((state) => state.songInfo);
   const changeSongInfo = (e, ind) => {
+    dispatch(changeSingleSong(null));
     if (e.target !== e.currentTarget) {
       return;
     }
@@ -75,8 +89,45 @@ const ViewPlaylist = () => {
     }
   };
 
+  const handleDeletePlaylist = async (e, ind) => {
+    try {
+      const token = window.localStorage.getItem("token");
+      const response = await axios.patch(
+        "http://localhost:8000/playlists/delete-song-from-playlist",
+        {
+          token,
+          playlistId: playlist._id,
+          songId: e,
+        }
+      );
+
+      fetchPlaylist();
+      if (playlist.length === 1) {
+        dispatch(changeFolder(null));
+        dispatch(changeSong(null));
+      } else {
+        dispatch(changeFolder(playlist));
+        if (ind === 0) {
+          dispatch(
+            changeSong({
+              song: playlist.songs[1].songFile,
+              songInd: 1,
+            })
+          );
+        } else {
+          dispatch(
+            changeSong({
+              song: playlist.songs[0].songFile,
+              songInd: 0,
+            })
+          );
+        }
+      }
+    } catch (err) {}
+  };
+
   if (loading) {
-    return <Loading />;
+    return <SoftLoading />;
   }
 
   return (
@@ -88,7 +139,19 @@ const ViewPlaylist = () => {
           playlistId={playlist._id}
         />
       )}
-      <div className="w-full h-screen flex p-2 justify-center overflow-y-auto pb-40">
+      {playlistName && (
+        <EditPlaylistName
+          setPlaylistName={setPlaylistName}
+          playlistId={playlist._id}
+        />
+      )}
+      {playlistImg && (
+        <EditPlaylistImage
+          setPlaylistImg={setPlaylistImg}
+          playlistId={playlist._id}
+        />
+      )}
+      <div className="w-full h-full flex p-2 justify-center overflow-y-auto pb-32 mb-24">
         <div className="w-11/12 flex flex-col h-fit">
           <div className="w-full py-4 flex gap-4">
             <div className="w-52 h-52 rounded-lg bg-[#1f1f1f]">
@@ -107,9 +170,11 @@ const ViewPlaylist = () => {
               )}
             </div>
             <div className="flex flex-col justify-between py-2">
-              <div>
+              <div className="">
                 <div className="text-2xl font-semibold flex items-center gap-2">
-                  <div>{playlist.name}</div>
+                  <div className="overflow-hidden max-w-64">
+                    <p className="truncate">{playlist.name}</p>
+                  </div>
                   <div
                     onClick={() => setRefresh(!refresh)}
                     className="hover:bg-[#323232] p-1 rounded-full"
@@ -120,47 +185,43 @@ const ViewPlaylist = () => {
                 <div>@{playlist.user?.username}</div>
                 <div>{playlist.length} songs</div>
               </div>
-              <div className="flex gap-2">
-                <div className="p-2 w-12 h-12 rounded-full bg-[#894aff] select-none text-center cursor-pointer hover:bg-[#5E1ED4] text-2xl flex justify-center items-center">
-                  <MdEdit />
+              {userInfo._id === playlist.user._id && (
+                <div className="flex gap-2">
+                  <div
+                    onClick={() => setPlaylistName(true)}
+                    className="p-2 w-12 h-12 rounded-full bg-[#894aff] select-none text-center cursor-pointer hover:bg-[#5E1ED4] text-2xl flex justify-center items-center"
+                  >
+                    <MdEdit />
+                  </div>
+                  <div
+                    onClick={() => setPlaylistImg(true)}
+                    className="p-2 w-12 h-12 rounded-full bg-[#894aff] select-none text-center cursor-pointer hover:bg-[#5E1ED4] text-2xl flex justify-center items-center"
+                  >
+                    <RiImageEditFill />
+                  </div>
+                  <div
+                    onClick={() => setDeleteSongs(!deleteSongs)}
+                    className="p-2 w-12 h-12 rounded-full bg-[#894aff] select-none text-center cursor-pointer hover:bg-[#5E1ED4] text-xl flex justify-center items-center"
+                  >
+                    <FaTrash />
+                  </div>
+                  <div
+                    onClick={() => setAddSong(true)}
+                    className="p-2 px-4 rounded-full bg-[#894aff] select-none text-center cursor-pointer hover:bg-[#5E1ED4] flex justify-center items-center"
+                  >
+                    Add Song
+                  </div>
                 </div>
-                <div
-                  onClick={() => setAddSong(true)}
-                  className="p-2 px-4 rounded-full bg-[#894aff] select-none text-center cursor-pointer hover:bg-[#5E1ED4] flex justify-center items-center"
-                >
-                  Add Song
-                </div>
-                <div
-                  onClick={() => setSort(!sort)}
-                  className="p-2 px-4 select-none text-center cursor-pointer flex justify-center items-center relative"
-                >
-                  <div>Sort By</div>
-                  {sort && (
-                    <div className="bg-[#0f0f0f] absolute w-32 top-[100%] left-0 border-[1px]">
-                      <div
-                        onClick={() => {
-                          setcurrentSongs(playlist?.songs?.slice().reverse());
-                        }}
-                        className="py-1 px-2 hover:bg-[#323232] text-left"
-                      >
-                        Latest added
-                      </div>
-                      <div
-                        onClick={() => {
-                          setcurrentSongs(playlist?.songs);
-                        }}
-                        className="py-1 px-2 hover:bg-[#323232] text-left"
-                      >
-                        Oldest added
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
           <div className="w-full">
+            {currentSongs.length === 0 && (
+              <div className="w-full my-1 bg-[#1f1f1f] text-xl p-4 flex justify-center items-center rounded-md ">
+                No songs found
+              </div>
+            )}
             {currentSongs.map((song, ind) => {
               return (
                 <div
@@ -184,14 +245,23 @@ const ViewPlaylist = () => {
                         />
                       )}
                     </div>
-                    <div className="w-64 truncate flex items-center">
-                      {song.name}
+                    <div className="w-28 sm:w-64 truncate flex items-center">
+                      <span className="truncate">{song.name}</span>
                     </div>
                   </div>
 
                   <div className="pr-2 flex gap-4">
                     <div className="w-14 flex justify-end">
-                      {secondsToTime(song.duration)}
+                      {deleteSongs ? (
+                        <div
+                          onClick={() => handleDeletePlaylist(song._id, ind)}
+                          className="p-2 text-[#894aff]"
+                        >
+                          <FaTrash />
+                        </div>
+                      ) : (
+                        <div>{secondsToTime(song.duration)}</div>
+                      )}
                     </div>
                   </div>
                 </div>

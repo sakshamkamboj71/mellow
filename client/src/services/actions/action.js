@@ -48,3 +48,16 @@ export const changeUserInfo = (data) => {
     data: data,
   };
 };
+
+export const getSingleSong = () => {
+  return {
+    type: "GET_SINGLE_SONG",
+  };
+};
+
+export const changeSingleSong = (data) => {
+  return {
+    type: "CHANGE_SINGLE_SONG",
+    data: data,
+  };
+};

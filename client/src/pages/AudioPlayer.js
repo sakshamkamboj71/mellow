@@ -12,8 +12,6 @@ const AudioPlayer = () => {
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
 
-  const [songLiked, setsongLiked] = useState(false);
-
   const audioRef = useRef();
   const progressBarRef = useRef();
   const image = useSelector((state) => state.getDefaultDisk);
@@ -184,7 +182,7 @@ const AudioPlayer = () => {
           </div>
           <div className="flex-grow flex ml-4 p-1 bg-[#1f1f1f] rounded-lg select-none cursor-pointer">
             <div className="w-12 h-12 bg-[#1f1f1f]">
-              {songFolderInfo?.songs ? (
+              {songFolderInfo?.songs && songFolderInfo?.songs[index]?.image ? (
                 <img
                   src={songFolderInfo?.songs[index]?.image}
                   alt="hehe"

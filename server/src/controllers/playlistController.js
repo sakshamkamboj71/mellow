@@ -204,3 +204,90 @@ export const updatePlaylistName = async (req, res) => {
     return res.status(501).json({ error: "Invalid Access" });
   }
 };
+
+export const updatePlaylistImage = async (req, res) => {
+  const { token, playlistId, imgUrl } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
+      if (err) {
+        return undefined;
+      } else {
+        return data.id;
+      }
+    });
+
+    if (!decoded) {
+      return res.status(501).json({ error: "Invalid Access" });
+    }
+
+    const playlist = await PlaylistModel.findById(playlistId);
+
+    if (decoded !== playlist.user.toString()) {
+      return res.status(401).json({
+        error: "You can edit only your playlists",
+      });
+    }
+
+    const newPlaylist = await PlaylistModel.findByIdAndUpdate(
+      playlistId,
+      { image: imgUrl },
+      { new: true }
+    );
+
+    return res
+      .status(200)
+      .json({ message: "Playlist Image Updated", newPlaylist });
+  } catch (err) {
+    return res.status(501).json({ error: "Invalid Access" });
+  }
+};
+
+export const deleteSongFromPlaylist = async (req, res) => {
+  const { token, playlistId, songId } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
+      if (err) {
+        return undefined;
+      } else {
+        return data.id;
+      }
+    });
+
+    if (!decoded) {
+      return res.status(501).json({ error: "Invalid Access" });
+    }
+
+    const playlist = await PlaylistModel.findById(playlistId);
+
+    if (!playlist.songs.includes(songId)) {
+      return res.status(401).json({
+        error: "The song is already deleted",
+      });
+    }
+
+    if (decoded !== playlist.user.toString()) {
+      return res.status(401).json({
+        error: "You can delete songs from only your playlists",
+      });
+    }
+
+    const updatedPlaylist = await PlaylistModel.findByIdAndUpdate(
+      playlistId,
+      { $pull: { songs: songId }, $inc: { length: -1 } },
+      { new: true }
+    );
+
+    if (!updatedPlaylist) {
+      return res.status(404).send("Playlist not found");
+    }
+
+    res
+      .status(200)
+      .json({ message: "Song deleted from playlist", updatedPlaylist });
+  } catch (err) {
+    console.log(err);
+    return res.status(501).json({ error: "Invalid Access" });
+  }
+};

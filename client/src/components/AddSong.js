@@ -130,7 +130,7 @@ const AddSong = ({ setAddSong, currentSongs, playlistId }) => {
         </form>
         {songs.length !== 0 && (
           <div className="flex items-center w-full text-xs mb-1">
-            Select any song to add to playlist
+            Select song
           </div>
         )}
         <div className="w-full enableScroll h-44 bg-[#0f0f0f] p-2">
@@ -152,7 +152,7 @@ const AddSong = ({ setAddSong, currentSongs, playlistId }) => {
                       <img
                         src={song.image}
                         alt=""
-                        className="w-full h-full object-contain"
+                        className="w-full h-full object-contain border-2 border-[#323232]"
                       />
                     </div>
                   ) : (
@@ -160,7 +160,7 @@ const AddSong = ({ setAddSong, currentSongs, playlistId }) => {
                       <img
                         src={image.icon}
                         alt="Loading..."
-                        className="w-full h-full object-contain rounded-lg"
+                        className="w-full h-full object-contain rounded-lg border-2 border-[#323232]"
                       />
                     </div>
                   )}

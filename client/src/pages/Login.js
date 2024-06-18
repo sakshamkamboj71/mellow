@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { changeUserInfo } from "../services/actions/action";
 
 const Login = ({ setType }) => {
   const [email, setEmail] = useState("");
@@ -9,6 +11,7 @@ const Login = ({ setType }) => {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,6 +48,16 @@ const Login = ({ setType }) => {
       setType(response.data.type);
 
       navigate("/");
+
+      try {
+        const response2 = await axios.post(
+          "http://localhost:8000/user-auth/get-user-data",
+          {
+            token: response.data.token,
+          }
+        );
+        dispatch(changeUserInfo(response2.data.user));
+      } catch (err) {}
     } catch (err) {
       setError(err.response.data.error);
     }

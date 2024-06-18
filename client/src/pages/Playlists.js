@@ -28,7 +28,7 @@ const Playlists = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex-grow flex flex-wrap justify-center">
+    <div className="flex-grow flex flex-wrap justify-center mb-24">
       {myState && (
         <div
           onClick={() => dispatch(toggleSidebar())}
@@ -49,7 +49,7 @@ const Playlists = () => {
                 {playlist.image ? (
                   <img
                     src={playlist.image}
-                    alt="User playlist"
+                    alt="Loading..."
                     className="w-full h-full object-contain rounded-lg"
                   />
                 ) : (

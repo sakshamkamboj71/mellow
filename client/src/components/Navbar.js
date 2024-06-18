@@ -2,7 +2,13 @@ import React from "react";
 import { LuMenu } from "react-icons/lu";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { toggleSidebar } from "../services/actions/action";
+import {
+  changeFolder,
+  changeSingleSong,
+  changeSong,
+  changeUserInfo,
+  toggleSidebar,
+} from "../services/actions/action";
 
 const Navbar = ({ type, setType, setValidity }) => {
   const navigate = useNavigate();
@@ -10,6 +16,12 @@ const Navbar = ({ type, setType, setValidity }) => {
   const handleLogout = () => {
     window.localStorage.removeItem("token");
     window.localStorage.removeItem("type");
+
+    dispatch(changeUserInfo({}));
+    dispatch(changeFolder(null));
+    dispatch(changeSong(null));
+    dispatch(changeSingleSong(null));
+
     setType("");
     setValidity(false);
 
@@ -42,7 +54,13 @@ const Navbar = ({ type, setType, setValidity }) => {
           Mellow
         </h1>
       </div>
-      <div className="h-full">
+      <div className="h-full flex">
+        <div
+          onClick={() => navigate("/profile")}
+          className="px-4 h-full flex items-center select-none cursor-pointer hover:bg-[#0f0f0f] font-semibold"
+        >
+          Profile
+        </div>
         <div
           onClick={handleLogout}
           className="px-4 h-full flex items-center select-none cursor-pointer hover:bg-[#5E1ED4] font-semibold"

@@ -38,7 +38,6 @@ export const addSong = async (req, res) => {
       songFile,
       image,
       duration,
-      language,
     });
 
     await newSong.save();
@@ -50,8 +49,21 @@ export const addSong = async (req, res) => {
 };
 
 export const fetchAllSongs = async (req, res) => {
+  const { token } = req.body;
   try {
-    const songs = await SongModel.find({});
+    const decoded = jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
+      if (err) {
+        return undefined;
+      } else {
+        return data.id;
+      }
+    });
+
+    if (!decoded) {
+      return res.status(401).json({ error: "Invalid Access" });
+    }
+
+    const songs = await SongModel.find({}).populate("artist", "name");
 
     return res.status(200).json({ songs });
   } catch (err) {

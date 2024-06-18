@@ -33,7 +33,7 @@ const LongSidebar = ({ userPlaylists }) => {
           <div className="text-lg">Albums</div>
         </div>
         <div
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/explore")}
           className="w-full h-14 flex gap-2 items-center bg-[#1f1f1f] hover:text-[#894aff] mb-2 rounded-md select-none cursor-pointer px-2"
         >
           <div className="flex text-2xl">
@@ -54,7 +54,8 @@ const LongSidebar = ({ userPlaylists }) => {
             return (
               <div
                 key={ind}
-                className="w-full p-2 text-sm rounded-xl hover:bg-[#323232] select-none cursor-pointer"
+                onClick={() => navigate(`/playlist/${playlist._id}`)}
+                className="w-full p-2 text-sm rounded-xl hover:bg-[#323232] select-none cursor-pointer truncate"
               >
                 {playlist.name}
               </div>
@@ -104,6 +105,7 @@ const LongSidebar = ({ userPlaylists }) => {
             return (
               <div
                 key={ind}
+                onClick={() => navigate(`/playlist/${playlist._id}`)}
                 className="w-full p-2 text-sm rounded-xl hover:bg-[#323232] select-none cursor-pointer"
               >
                 {playlist.name}

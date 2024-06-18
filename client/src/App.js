@@ -9,10 +9,13 @@ import Navbar from "./components/Navbar";
 import Sidebar from "./components/Sidebar";
 import Albums from "./pages/Albums";
 import AudioPlayer from "./pages/AudioPlayer";
+import Explore from "./pages/Explore";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Playlists from "./pages/Playlists";
+import Profile from "./pages/Profile";
 import Register from "./pages/Register";
+import SongPlayer from "./pages/SongPlayer";
 import ViewPlaylist from "./pages/ViewPlaylist";
 import ArtistHome from "./pages/artist/ArtistHome";
 import Dashboard from "./pages/artist/Dashboard";
@@ -105,7 +108,8 @@ function App() {
           )}
         </MaybeShowSidebar>
 
-        {song.songPlaying && <AudioPlayer />}
+        {song.folderPlaying && <AudioPlayer />}
+        {!song.folderPlaying && song.singleSong && <SongPlayer />}
 
         <Routes>
           {type === "user" && (
@@ -114,6 +118,11 @@ function App() {
                 <Route path="/" element={<Playlists />} />
                 <Route path="/playlist/:id" element={<ViewPlaylist />} />
                 <Route path="/albums" element={<Albums />} />
+                <Route path="/explore" element={<Explore />} />
+                <Route
+                  path="/profile"
+                  element={<Profile userPlaylists={userPlaylists} />}
+                />
               </Route>
             </>
           )}

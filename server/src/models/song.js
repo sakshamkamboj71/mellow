@@ -12,7 +12,6 @@ const SongSchema = new mongoose.Schema(
     image: { type: String },
     duration: { type: Number },
     likes: { type: Number },
-    language: { type: String },
   },
   { timestamps: true }
 );

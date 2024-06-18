@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { UserModel } from "../models/user.js";
 
 export const registerUser = async (req, res) => {
-  const { username, name, email, password, type, profilePic } = req.body;
+  const { username, name, email, password, type } = req.body;
 
   try {
     const user = await UserModel.findOne({ username });
@@ -29,7 +29,7 @@ export const registerUser = async (req, res) => {
       verified,
       password: hashedPassword,
       type,
-      profilePic,
+      profilePic: "",
     });
 
     await newUser.save();

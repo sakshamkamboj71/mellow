@@ -10,7 +10,7 @@ import {
 const router = express.Router();
 
 router.post("/add-song", addSong);
-router.get("/fetch-all-songs", fetchAllSongs);
+router.post("/fetch-all-songs", fetchAllSongs);
 router.post("/fetch-artist-songs", fetchArtistSongs);
 router.post("/fetch-artist-own-songs", fetchArtistOwnSongs);
 router.post("/fetch-query-songs/:query", fetchQuerySongs);
